@@ -1,0 +1,38 @@
+<div class="wrapper">
+    <h1><%= title %></h1>
+
+    <p class="lead">Welcome to <%= title %></p>
+
+    <h2>User Authentification</h2>
+
+    <div class="help-block">
+        
+        <% if(!username) { %>
+
+            <h3>You are not logged in</h3>
+            <p class="lead">Please <a href="<%=cas_login_url %> " id="login">Login</a>.</p>
+            <!-- <%=cas_login_url %> -->
+            <p>RERST calls will be refused:</p>
+
+        <% } else { %>
+
+            <h3>Wellcome <%= username %></h3>
+            <p class="lead">
+                <a id="logout" href=" <%=cas_logout_url %>">Logout</a>
+                <!-- <%=cas_logout_url %> -->
+            </p>
+            <p class="lead">
+                <p>You are able to make some RERST calls now:</p>
+                
+            </p>
+            
+        <% } %>
+        <p><a href="#" id="makerest">Retrieve user info</a></p>
+        <p class="">
+            <textarea id="echo" class="hide">  </textarea>
+            <p class="error hide"></p>
+            <p class="user hide"></p>
+        </p>
+    </div>
+
+</div>
