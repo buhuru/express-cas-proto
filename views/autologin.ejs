@@ -1,0 +1,51 @@
+
+<div class="wrapper">
+    <h1><%= title %></h1>
+
+    <p class="lead">Welcome to <%= title %></p>
+
+    <h2>User Auto Authentification</h2>
+
+    <div class="help-block">
+        <div class="farevey"><a href="<%=cas_login_url %> " id="login">Login</a></div>
+
+        <% if(!username) { %>
+
+            <h3>You are not logged in</h3>
+            <p class="lead">Pleasewait while login procedure begins.</p>
+            <p>Note: its totally automated.</p>
+            <img id="loading" src="/images/loading.gif" class="" />
+            
+        <% } else { %>
+
+            <h3>Wellcome <%= username %></h3>
+            <p class="lead">Congraduations - you are logged in.</p>
+                        
+        <% } %>
+        
+    </div>
+
+</div>
+
+<% if(!username) { %>
+
+    <script type="text/javascript">
+        window.setTimeout(function () {
+
+            $('#loading').hide()
+
+            $('a#login').popup({
+                height: 500,
+                width: 500,
+                centerBrowser: 1,
+                windowName: 'cas_login_popup'
+            });
+
+            $('#login').click();
+
+        }, 1000)
+            
+            
+    </script>
+
+<% } %>

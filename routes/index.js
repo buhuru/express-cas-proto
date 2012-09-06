@@ -2,13 +2,12 @@ routes = function(express, conf, superagent) {
     var routes = {};
     var https = require('https');
 
-    function query2string(q) {
-        var k = '',
-            s = '';
-        for (k in q) {
-            s += '&' + k + '=' + q[k]
-        }
-        return s;
+    function getCasLoginUrl() {
+        return (conf.cas.protocol + '://' + '%h%:' + conf.cas.port + '/cas/login?service=%s%').replace('%h%', conf.cas.host).replace('%s%', conf.cas.service);
+    }
+
+    function getCasLogoutUrl() {
+        return (conf.cas.protocol + '://' + '%h%:' + conf.cas.port + '/cas/logout').replace('%h%', conf.cas.host);
     }
 
     function lcarry(f) {
@@ -50,8 +49,8 @@ routes = function(express, conf, superagent) {
     var checkCASTicket = lcarry(checkCASTicket, conf.cas.url, conf.cas.service);
 
     routes.index = function(req, res) {
-        var caslogin =  (conf.cas.protocol + '://' + '%h%:' + conf.cas.port + '/cas/login?service=%s%').replace('%h%', conf.cas.host).replace('%s%', conf.cas.service);
-        var caslogout = (conf.cas.protocol + '://' + '%h%:' + conf.cas.port + '/cas/logout').replace('%h%', conf.cas.host);
+        var caslogin = getCasLoginUrl();
+        var caslogout = getCasLogoutUrl();
         //console.log(req.session)
         return res.render('index', {
             title: 'Express CAS login',
@@ -97,30 +96,54 @@ routes = function(express, conf, superagent) {
         });
     }
 
-    routes.rest_user = function (req, res) {
-        
-        if(!req.session.username){
+    routes.rest_user = function(req, res) {
+
+        if (!req.session.username) {
             return res.json({
                 error: 'ANUTHORISED',
                 raw: 'Anauthorosied users cannot get rest info'
             });
         }
 
-        superagent.get(conf.resturl, function (rest) {
-            if(rest.statusCode !== 200){
+        superagent.get(conf.resturl, function(rest) {
+
+            if (rest.statusCode !== 200) {
                 return res.json({
                     error: rest.statusCode,
-                    raw : rest.text
+                    raw: rest.text
                 });
             }
 
             return res.json({
                 success: rest.statusCode,
-                data : rest.text
-                
+                data: rest.text
+
             });
             //console.log(rest)
             //res.json(rest);
+        });
+    }
+
+
+
+    routes.autologin = function(req, res) {
+        var caslogin = getCasLoginUrl();
+
+        if (!req.session.autologedin) req.session.autologedin = 0;
+
+        req.session.autologedin += 1;
+
+        if (req.session.autologedin > 1) {
+            req.session.username = null;
+            req.session.autologedin = 0;
+        } 
+        console.log('loggedin', req.session.autologedin)
+
+        return res.render('autologin', {
+            title: 'Express CAS auto login',
+            username: req.session.username,
+            cas_login_url: caslogin,
+            layout : 'autologin-layout'
         });
     }
 

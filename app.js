@@ -37,6 +37,7 @@ app.get('/logout', routes.logout);
 app.get('/cas/verify/:ticket', routes.cas_verify);
 app.get('/cas/login', routes.cas_login);
 app.get('/rest/user', routes.rest_user);
+app.get('/autologin', routes.autologin);
 
 
 
